@@ -1,6 +1,7 @@
 // static/js/modules/anime.js
 import { DataTableManager } from '../common/datatable.js';
 import { Utils } from '../common/utils.js';
+import translations from '../l18n/en.js';
 
 export default class Anime {
     constructor() {
@@ -27,15 +28,15 @@ export default class Anime {
             },
             responsive: true,
             columns: [
-                { data: "id", title: 'ID', render: function(data, type, row) {
+                { data: "id", title: translations.tableHeaders.anime.id, render: function(data, type, row) {
                     return `<a href="/anime/${data}">${data}</a>`;
                 }, visible: true },
-                { data: 'titleUa', title: 'UA', visible: true },
-                { data: 'titleEn', title: 'EN', visible: true },
-                { data: 'season', title: 'Season', visible: true },
-                { data: 'type.name', title: 'Type', visible: true },
-                { data: 'status.name', title: 'Status', visible: true },
-                { data: 'releaseDate', title: 'releaseDate', visible: true },
+                { data: 'titleUa', title: translations.tableHeaders.anime.titleUa, visible: true },
+                { data: 'titleEn', title: translations.tableHeaders.anime.titleEn, visible: true },
+                { data: 'season', title: translations.tableHeaders.anime.season, visible: true },
+                { data: 'type.name', title: translations.tableHeaders.anime.type, visible: true },
+                { data: 'status.name', title: translations.tableHeaders.anime.status, visible: true },
+                { data: 'releaseDate', title: translations.tableHeaders.anime.releaseDate, visible: true },
             ],
             order: [[6, 'des']],
             layout: {

@@ -10,7 +10,8 @@ from .models.user import bcrypt  # Importing bcrypt instance
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = 'your_secret_key'
+    # Fetch the secret key from environment variable
+    app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default_secret_key')
     db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'toloka2web.db')
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 

@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_required
 from flask_principal import Permission, UserNeed, RoleNeed, identity_changed, Identity, AnonymousIdentity, identity_loaded
 
-from app.services.config_service import add_new_setting, read_all_settings_from_db, update_setting
+from app.services.config_service import add_new_setting, read_all_settings_from_db, sync_settings, update_setting
 from app.services.route_service import get_installed_packages, list_files
 
 
@@ -26,6 +26,14 @@ def add(setting_id):
 @admin_permission.require(http_exception=403)
 def update(setting_id):    
     return jsonify(update_setting(setting_id, request.form['section'], request.form['key'], request.form['value'] ))
+
+@setting_bp.route('/api/settings/sync', methods=['POST'])
+@login_required
+@admin_permission.require(http_exception=403)
+def sync():
+    direction = request.form['direction']
+    type = request.form['type']       
+    return jsonify(sync_settings(type, direction))
 
 @setting_bp.route('/api/settings/versions', methods=['GET'])
 @login_required

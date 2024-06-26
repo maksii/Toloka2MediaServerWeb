@@ -1,6 +1,6 @@
 # routes.py
 
-from flask import current_app, flash, redirect, request, render_template, url_for, get_flashed_messages
+from flask import Response, current_app, flash, redirect, request, render_template, url_for, get_flashed_messages
 from flask_login import current_user, login_required, login_user, logout_user
 from flask_principal import Permission, UserNeed, RoleNeed, identity_changed, Identity, AnonymousIdentity, identity_loaded
 
@@ -108,3 +108,23 @@ def configure_routes(app, login_manager, admin_permission, user_permission):
     def before_request():
         if current_user.is_authenticated:
             identity_changed.send(current_app._get_current_object(), identity=Identity(current_user.id))
+            
+    @app.route('/static/js/common/user.js')
+    def user_script():
+        if current_user.is_authenticated:
+            user_id = current_user.id if current_user.id else "undefined"
+            # Ensure roles is a string and default to an empty string if none
+            user_roles = current_user.roles if current_user.roles else ""
+        else:
+            user_id = "undefined"
+            user_roles = ""
+    
+        js_content = f"""
+        const user = {{
+            id: "{user_id}",
+            roles: "{user_roles}"
+        }};
+        export default user;
+        """
+    
+        return Response(js_content, mimetype='application/javascript')

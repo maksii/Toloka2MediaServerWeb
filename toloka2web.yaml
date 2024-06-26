@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  toloka2web:
+    image: maksii/toloka2web:latest
+    container_name: toloka2web
+    volumes:
+    - /path/to/your/config:/app/data
+    - /path/to/your/downloads:/path/to/your/downloads
+  environment:
+    - PORT=80 
+    - PUID=1024
+    - PGID=100
+    - CRON_SCHEDULE=0 */2 * * *
+    - TZ=Europe/Kiev
+    - API_KEY=your_api_key_here
+    - FLASK_SECRET_KEY=default_secret_key
+  restart: unless-stopped
+  user: "${PUID}:${PGID}"

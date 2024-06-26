@@ -1,5 +1,6 @@
 // static/js/modules/releases-add.js
 import { Utils } from '../common/utils.js';
+import translations from '../l18n/en.js';
 
 export default class ReleasesAdd {
     init() {
@@ -42,7 +43,7 @@ export default class ReleasesAdd {
             if (number !== '') {
                 const item = document.createElement('div');
                 item.className = 'list-group-item';
-                item.textContent = `Index: ${index+1}, Number: ${number}`;
+                item.textContent = `${translations.labels.releaseAddIndex}: ${index+1}, ${translations.labels.releaseAddNumber}: ${number}`;
                 item.addEventListener('click', () => {
                     document.querySelector('#index').value = index + 1;
                     resultList.style.display = 'none';
@@ -73,7 +74,7 @@ export default class ReleasesAdd {
             body: formData
         });
         const result = await response.json();
-        submitButton.innerHTML = 'Submit';
+        submitButton.innerHTML = translations.buttons.releaseAddSubmit;
         submitButton.disabled = false;
 
         const bsOperationOffcanvas = new bootstrap.Offcanvas('#offcanvasOperationResults')

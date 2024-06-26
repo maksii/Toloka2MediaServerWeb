@@ -1,6 +1,7 @@
 // static/js/modules/studios.js
 import { DataTableManager } from '../common/datatable.js';
 import { Utils } from '../common/utils.js';
+import translations from '../l18n/en.js';
 
 export default class Studios {
     constructor() {
@@ -27,11 +28,11 @@ export default class Studios {
             },
             responsive: true,
             columns: [
-                { data: "id", title: 'ID', render: function(data, type, row) {
+                { data: "id", title: translations.tableHeaders.studioDetails.id, render: function(data, type, row) {
                     return `<a href="/studios/${data}">${data}</a>`;
                 }, visible: true },
-                { data: 'name', title: 'Name', visible: true },
-                { data: "telegram", title: 'telegram', render: function(data, type, row) {
+                { data: 'name', title: translations.tableHeaders.studioDetails.name, visible: true },
+                { data: "telegram", title: translations.tableHeaders.studioDetails.telegram, render: function(data, type, row) {
                     return `<a href="${data}">${data}</a>`;
                 }, visible: true },
             ],

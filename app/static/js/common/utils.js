@@ -1,4 +1,5 @@
 // static/js/common/utils.js
+import translations from '../l18n/en.js';
 export class Utils {
     static async fetchData(url, options = {}) {
         try {
@@ -59,13 +60,48 @@ export class Utils {
                     ${response.torrent_references ? generateAccordion('torrentAccordion', 'Torrent References', response.torrent_references) : ''}
                     ${response.operation_logs ? generateAccordion('logsAccordion', 'Operation Logs', response.operation_logs) : ''}
                     <hr>
-                    <p class="mb-0">Create an issue on github if something wrong.</p>
+                    <p class="mb-0">${translations.labels.operationStatusGithub}</p>
                 </div>
             </div>
         `;
     
         // Insert the generated HTML into a predefined container in your HTML
         document.getElementById('offcanvasBody').innerHTML = cardHTML;
+    }
+
+    static progressPercentage(progress) {
+        const progressPercentage = Math.round(progress * 100);
+        return progressPercentage;
+    }
+
+    static getColorForProgress(progress) {
+        let r, g, b;
+    
+        if (progress >= 100) {
+            r = 25; g = 135; b = 84; // Greenish color for progress >= 100
+        } else if (progress >= 40) {
+            // Interpolate between yellowish (255, 193, 7) and greenish (25, 135, 84)
+            const factor = (progress - 40) / 60; // Adjusting factor to correctly interpolate from 40 to 100
+            r = 255 + (25 - 255) * factor;
+            g = 193 + (135 - 193) * factor;
+            b = 7 + (84 - 7) * factor;
+        } else if (progress >= 0) {
+            // Interpolate between more intense reddish (255, 0, 0) and less intense reddish (220, 53, 69)
+            const factor = progress / 40; // Adjusting factor for interpolation from 0 to 40
+            r = 255 + (220 - 255) * factor;
+            g = 0 + (53 - 0) * factor;
+            b = 0 + (69 - 0) * factor;
+        } else {
+            r = 255; g = 193; b = 7; // Yellowish color for negative progress (fallback)
+        }
+    
+        return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+    }
+
+    static activeTooltips()
+    {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     }
 
     static downloadFile(url) {
@@ -79,7 +115,7 @@ export class Utils {
 
     static renderButtonSpinner()
     {
-        return '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+        return `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${translations.labels.buttonsLoadingText}`;
     }
 
     static renderActionButton(action, buttonClass, buttonState, buttonIcon, buttonText)

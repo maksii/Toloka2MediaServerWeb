@@ -10,8 +10,11 @@ def login_or_api_key_required(f):
         # Check if user is logged in
         if not current_user.is_authenticated:
             # If not logged in, check for API key
-            api_key = request.headers.get('x_api_key')
-            if not api_key or api_key != 'your_api_key_here':  # Validate API key # TBD temporary to allow cron. Will need logic to provision api keys from db, and later on pass to cron
+            api_key = request.headers.get('x-api-key')
+            # Fetch the valid API key from environment variable
+            valid_api_key = os.environ.get('API_KEY', 'your_api_key_here')  # default can be replaced or removed
+
+            if not api_key or api_key != valid_api_key:
                 abort(403, description="Access denied: No valid API key or login session")
         return f(*args, **kwargs)
     return decorated_function

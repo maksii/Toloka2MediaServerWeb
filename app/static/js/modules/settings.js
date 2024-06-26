@@ -1,6 +1,7 @@
 // static/js/modules/setttings.js
 import { DataTableManager, EventDelegator } from '../common/datatable.js';
 import { Utils } from '../common/utils.js';
+import translations from '../l18n/en.js';
 
 export default class Settings {
     constructor() {
@@ -12,6 +13,8 @@ export default class Settings {
         this.addEventListeners();
         this.checkVersions();
         //DataTableManager.onDataTableXhr(this.table);
+
+        document.querySelector("#configuration-tab-pane > div:nth-child(1) > div > div").innerText = translations.labels.settingsNotification;
     }
     settingsTableBody = document.querySelector('#settingsTable tbody');
     collapsedGroups = {};
@@ -26,26 +29,26 @@ export default class Settings {
             },
             responsive: true,
             columns: [
-                { data: "id", title: 'ID', visible: true },
-                { data: 'section', title: 'Section', visible: true, render: function(data, type, row) {
+                { data: "id", title: translations.tableHeaders.settings.id, visible: true },
+                { data: 'section', title: translations.tableHeaders.settings.section, visible: true, render: function(data, type, row) {
                     if (type === 'display') {
                         return DataTableManager.dataTableRenderAsInput(data);
                     }
                     return data;
                 } },
-                { data: 'key', title: 'Key', visible: true, render: function(data, type, row) {
+                { data: 'key', title: translations.tableHeaders.settings.key, visible: true, render: function(data, type, row) {
                     if (type === 'display') {
                         return DataTableManager.dataTableRenderAsInput(data);
                     }
                     return data;
                 } },
-                { data: 'value', title: 'Value', visible: true, render: function(data, type, row) {
+                { data: 'value', title: translations.tableHeaders.settings.value, visible: true, render: function(data, type, row) {
                     if (type === 'display') {
                         return DataTableManager.dataTableRenderAsInput(data);
                     }
                     return data;
                 } },
-                { data: null, defaultContent: Utils.renderActionButton("action-save","btn-outline-warning", "", "bi-pencil-square", "Save") }
+                { data: null, defaultContent: Utils.renderActionButton("action-save","btn-outline-warning", "", "bi-pencil-square", translations.buttons.settingSaveButton) }
             
             ],
             columnDefs: [
@@ -79,7 +82,7 @@ export default class Settings {
                 {
                     buttons:[
                         {
-                            text: 'Add',
+                            text: translations.buttons.settingsAdd,
                             className: 'btn btn-primary',
                             action: () => {
                                 var newRowId = 1;
@@ -100,17 +103,17 @@ export default class Settings {
                             }
                         },
                         {
-                            text: 'Sync to app.ini',
+                            text: translations.buttons.settingsSyncTo,
                             className: 'btn btn-primary',
-                            action: function () {
-                                console.log('TBD');
+                            action: () => {
+                                this.syncSettings("to", "app");
                             }
                         },
                         {
-                            text: 'Sync from app.ini',
+                            text: translations.buttons.settingsSyncFrom,
                             className: 'btn btn-primary',
-                            action: function () {
-                                console.log('TBD');
+                            action: () => {
+                                this.syncSettings("from", "app");
                             }
                         }
                     ]
@@ -124,6 +127,9 @@ export default class Settings {
 
     addEventListeners() {
         new EventDelegator('#settingsTable tbody', this.handleAction.bind(this));
+
+        document.querySelector('#syncTorrentReleaseTo').addEventListener('click', ()=> {this.syncSettings('to', 'release')}); 
+        document.querySelector('#syncTorrentReleaseFrom').addEventListener('click', ()=> {this.syncSettings('from', 'release')}); 
     }
 
     handleAction(actionName, element) {
@@ -139,6 +145,38 @@ export default class Settings {
           console.error(`No handler defined for action: ${actionName}`);
         }
       }
+
+    syncSettings(direction, type) {
+        const url = '/api/settings/sync';
+    
+        const formData = new FormData();
+        formData.append('direction', direction);
+        formData.append('type', type);
+    
+        const fetchOptions = {
+            method: 'POST',
+            body: formData,
+            credentials: 'include', 
+            headers: {
+                'Accept': 'application/json'
+            }
+        };
+    
+        fetch(url, fetchOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                DataTableManager.refreshTable(this.table);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
 
     groupToggle(element)
     {
@@ -161,7 +199,7 @@ export default class Settings {
         updatedData.value = inputs[2].value;
 
         target.disabled = true;
-        target.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+        target.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${translations.buttons.buttonsLoadingText}`;
 
         let formData = new FormData();
         formData.append('id', rowData.id);
@@ -175,13 +213,13 @@ export default class Settings {
         })
         .then(response => response.json())
         .then(detail => {
-            target.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Update';
+            target.innerHTML = `<i class="bi bi-arrow-clockwise"></i> ${translations.buttons.settingsUpdateButton}`;
             target.disabled = false;
             this.table.ajax.reload();
         })
         .catch(error => {
             console.error('Error:', error);
-            target.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Update';
+            target.innerHTML = `<i class="bi bi-arrow-clockwise"></i> ${translations.buttons.settingsUpdateButton}`;
             target.disabled = false;
         });
         
@@ -196,7 +234,7 @@ export default class Settings {
             .then(response => response.json())
             .then(data => {
                 const formattedContent = formatContent(data);
-                showVersionToast("Installed Packages", formattedContent);
+                showVersionToast(translations.labels.checkVersions, formattedContent);
             })
             .catch(error => console.error('Error fetching version data:', error));
             });

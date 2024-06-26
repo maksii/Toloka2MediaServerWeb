@@ -9,7 +9,10 @@ import StudiosDetails from './modules/studios-details.js';
 import Settings from './modules/settings.js';
 import UpdateChecker from './common/update-checker.js';
 import { DataTableManager } from './common/datatable.js';
-import { Backdrop } from './common/utils.js';
+import { Backdrop, Utils } from './common/utils.js';
+
+import user from './common/user.js';
+
 class AppController {
     constructor() {
         this.modules = {
@@ -52,6 +55,8 @@ class AppController {
         } else {
             console.log('No specific module for this page or page identifier missing.');
         }
+
+        Utils.activeTooltips();
     }
 }
 

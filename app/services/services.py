@@ -14,7 +14,8 @@ from toloka2MediaServer.main_logic import (
     search_torrents, get_torrent as get_torrent_external,
     add_torrent as add_torrent_external
 )
-from stream2mediaserver.main_logic import search_releases as search_releases_stream
+from stream2mediaserver.main_logic import search_releases as search_releases_stream, get_release_details as get_release_details_stream
+import urllib3
 
 from app.models.request_data import RequestData
 from app.services.mal_service import search_anime
@@ -43,8 +44,25 @@ def initiate_config():
     
     return config
 
+def initiate_min_config():
+    app_config_path='data/app.ini'
+    title_config_path='data/titles.ini'
+    logger_path = 'data/app_web.log'
+
+    app_config, titles_config, application_config = load_configurations(app_config_path,title_config_path)
+    logger=setup_logging(logger_path)
+
+    config = Config(
+        logger=logger,
+        app_config=app_config,
+        titles_config=titles_config,
+        application_config=application_config
+    )
+    
+    return config
+
 def get_titles_logic():
-    config = initiate_config()
+    config = initiate_min_config()
     sections = {}
     for section in config.titles_config.sections():
         options = {}
@@ -202,6 +220,11 @@ def search_titles_from_streaming_site(query):
     else:
         return {}
 
+def get_streaming_site_release_details(provider_name, release_url):
+    search_result = get_release_details_stream(f'{provider_name}_provider', release_url)
+    
+    return search_result
+
 def add_title_from_streaming_site(data):
     # Logic for adding a title from a streaming site
     pass
@@ -299,3 +322,12 @@ def multi_search(query):
         })
 
     return jsonify(combined_data)
+
+
+def get_releases_torrent_status():
+    config = initiate_config()
+    category = config.app_config[config.application_config.client]["category"]
+    tags = config.app_config[config.application_config.client]["tag"]
+    torrent_info = config.client.get_torrent_info(status_filter = 'all', category = category, tags=tags, sort="added_on", reverse=True)
+    
+    return torrent_info

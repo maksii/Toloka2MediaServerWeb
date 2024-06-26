@@ -1,4 +1,5 @@
 // static/js/common/update-checker.js
+import translations from '../l18n/en.js';
 export default class UpdateChecker {
     constructor() {
         this.repo = 'maksii/Toloka2Web';
@@ -28,7 +29,7 @@ export default class UpdateChecker {
         const toastHTML = `
             <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
                 <div class="toast-header">
-                    <strong class="me-auto">New Release: ${title}</strong>
+                    <strong class="me-auto">${translations.labels.newVersionToastTitle} ${title}</strong>
                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
                 <div class="toast-body">

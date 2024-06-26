@@ -163,4 +163,5 @@ cython_debug/
 #.idea/
 /data/*
 !/data/anime_data.db
+!/data/notify_api.sh
 cookie.txt
